@@ -18,11 +18,13 @@
  */
 
 #include "YASL.h"      // For Socket, ServerSocket, and SocketException
-//#include "json.hpp"
+#include "json.hpp"
 #include "checkArgs.h"
 #include <iostream>    // For cerr and cout
 #include <cstdlib>     // For atoi()
 #include <fstream>
+
+using namespace nlohmann;
 
 const uint32_t RCVBUFSIZE = 32;    // Size of receive buffer
 
@@ -48,34 +50,37 @@ void HandleTCPClient(TCPSocket *sock) {
 	std::string request=" ";
 	
 	bReceived = sock->recv(eBuffer, RCVBUFSIZE); //leyendo el request
-	if(bReceived < 0){
-		std::cerr << "no hay que leer " <<  std::endl;
-	}
+		if(bReceived < 0){
+			std::cerr << "no hay que leer" <<  std::endl;
+		}
+		else{
+			eBuffer[bReceived] = '\0'; 	//termino de linea
+			request = request + eBuffer + "\n"; //se junta la linea
+		}
 
-	eBuffer[bReceived] = '\0'; 	//termino de linea
-	request = request + eBuffer + "\n"; //se junta la linea
-
-	std:: string pag;
-	pag =request.substr(3,request.substr(4).find(" "));//se encuentra el dato que nos estan pidiendo
 	
-	std::string response;
+	std:: string pag;
+	pag =request.substr(3,request.substr(3).find(" "));//se encuentra el dato que nos estan pidiendo
+	
 	std::ifstream archivo;
+	std::string response;
 
 	if(pag=="/pagina.html"){
-		archivo.open("../www-data/pagina.html");
+		root_dir = root_dir + pag;
+		archivo.open(root_dir);
 		response=("HTTP/1.1 200 OK\r\n 20 Content-Type: text/html\r\n\r\n");
 	}
 	else if(pag =="/pagina2.html"){
-		archivo.open("../www-data/pagina2.html");
+		archivo.open(root_dir);
 		response=("HTTP/1.1 200 OK\r\n 20 Content-Type: text/html\r\n\r\n");
 	}
 	else if(pag=="/pagina3.html"){
-		archivo.open("../www-data/pagina3.html");
+		archivo.open(root_dir);
 		response=("HTTP/1.1 200 OK\r\n 20 Content-Type: text/html\r\n\r\n");
 	}
 	else{
-		archivo.open("../www-error/error.html");
-		response=("HTTP/1.1 200 OK\r\n 20 Content-Type: text/html\r\n\r\n");
+		archivo.open(error_File);
+		response=("HTTP/1.1 error 404 OK\r\n 20 Content-Type: text/html\r\n\r\n");
 	}
 	sock-> send(response.c_str(), response.length());
 	//se lee archivo html
