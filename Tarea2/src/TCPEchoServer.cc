@@ -60,7 +60,7 @@ void HandleTCPClient(TCPSocket *sock) {
 
 	
 	std:: string pag;
-	pag =request.substr(3,request.substr(3).find(" "));//se encuentra el dato que nos estan pidiendo
+	pag =request.substr(4,request.substr(4).find(" "));//se encuentra el dato que nos estan pidiendo
 	
 	std::ifstream archivo;
 	std::string response;

@@ -1,6 +1,6 @@
 {
 "ip"            : "127.0.0.1",
-"puerto"        : 7200,
+"puerto"        : "7900",
 "root_dir"      : "../www-data",
-"error_File"    :"../www-error"
+"notFoundFile"    :"../www-error"
 }
